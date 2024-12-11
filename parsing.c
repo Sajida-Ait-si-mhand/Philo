@@ -83,7 +83,7 @@ int	parsing(t_element *data, int ac, char **av)
 	int	error_code;
 
 	if (ac < 5 || ac > 6)
-		print_error();
+		return (print_error());
 	data->number_of_philosophers = custom_atoi(av[1]);
 	data->time_to_die = custom_atoi(av[2]);
 	data->time_to_eat = custom_atoi(av[3]);

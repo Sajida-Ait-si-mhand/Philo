@@ -6,33 +6,36 @@ pthread_mutex_t mutix;
 
 void *routine(void* arg)
 {
-        pthread_mutex_lock(&mutix);
+    pthread_mutex_lock(&mutix);
     while (mails < 1500000)
     {
         mails++;
     }
-        pthread_mutex_unlock(&mutix);
+    pthread_mutex_unlock(&mutix);
     
 }
 int main(void)
 {
-    pthread_t p1, p2;
+    pthread_t th[200];
     pthread_mutex_init(&mutix, NULL);
     int i = 0;
     while(i < 200)
     {
-        if (pthread_create(&p1, NULL, routine, NULL))
-        return 1;
-        // if (pthread_create(&p2, NULL, routine, NULL))
-        //     return 1;
+        if (pthread_create(&th[i], NULL, routine, NULL))
+            return 1;
+        printf(" \033[34mthread has started:%d \033[0m", i);
+        
         i++;
     }
-      for (int i = 0; i < 200; i++)
+    i = 0;
+    while (i < 200)
     {
-        pthread_join(p1, NULL);
+        if (pthread_join(th[i], NULL))
+            return 1;
+        i++;
     }
+    printf(" \033[37m Finish the execution: \033[0m\n");
     pthread_mutex_destroy(&mutix);
     printf("number_of_meals: [%d]\n", mails);
-    // usleep(1);//
     return 0;
 }

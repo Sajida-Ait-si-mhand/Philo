@@ -26,9 +26,9 @@ int	ft_strlen(char *str)
 
 int	print_error(void)
 {
-	printf("wrong arguments number!!\nyou need to provide:\n\
-		number_of_philosophers\ntime_to_die (in milliseconds)\n\
-		time_to_eat (in milliseconds)\ntime_to_sleep (in milliseconds)\n\
-		number_of_times_each_philosopher_must_eat (optional)\n");
+	printf("wrong arguments number!! you need to provide:\n");
+	printf("number_of_philosophers\ntime_to_die (in milliseconds)\ntime_to_eat (in milliseconds)\n");
+	printf("time_to_sleep (in milliseconds)\nnumber_of_times_each_philosopher_must_eat (optional)\n");
+		
 	return (1);
 }
