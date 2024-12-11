@@ -13,7 +13,7 @@ typedef struct s_philo {
 	int				id;
 	int				n_of_meals;
 	unsigned long		last_meal;
-};
+} t_philo;
 
 typedef struct s_element
 {
