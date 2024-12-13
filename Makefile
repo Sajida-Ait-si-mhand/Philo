@@ -1,11 +1,15 @@
-CC = cc
-CFLAGS = -Wall -Wextra -Werror   -fsanitize=thread -g
-#-fsanitize=thread 
-NAME = philo
-SRC_FILES = philo.c philo_init.c \
-			 parsing.c parsing_utils.c\
-			philo_utils.c supervisor.c \
 
+CC = cc
+CFLAGS = -Wall -Wextra -Werror  -fsanitize=thread -g3
+ 
+
+NAME = philo
+SRC_FILES = philo.c philo_init.c philo_utils.c \
+			parsing.c parsing_utils.c\
+			supervisor.c  routine.c\
+			mutexes_init.c
+
+	
 OBJ_FILES = $(SRC_FILES:.c=.o)
 
 .SECONDARY: $(OBJ_FILES)
@@ -22,3 +26,6 @@ fclean: clean
 	rm -rf $(NAME)
 
 re: fclean all
+ret: re
+	rm -rf $(OBJ_FILES)
+	clear

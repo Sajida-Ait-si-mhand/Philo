@@ -1,63 +1,84 @@
-#include "philo.h"  
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_init.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: saait-si <saait-si@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/13 05:02:48 by saait-si          #+#    #+#             */
+/*   Updated: 2024/12/13 05:08:40 by saait-si         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void  printf_mutix(int id, t_element *data, char *str)
+#include "philo.h"
+
+void	ft_kill_threads(t_element *data, int last_index)
 {
-    pthread_mutex_lock(data->print);
-    printf("%lu %d %s", get_time() - data->start_time, id + 1, str);
-    pthread_mutex_unlock(data->print);
-}  
+	int	i;
 
-void *routine(void* arg)
-{
-    t_philo *philo = (t_philo *)arg;
-    if (philo->id % 2 != 0)
-        usleep(300);
-    while(1)
-    {
-        pthread_mutex_lock(&philo->data->forks[philo->left_fork]);
-        printf_mutix(philo->id,  philo->data, "has taken a fork\n");
-        pthread_mutex_lock(&philo->data->forks[philo->right_fork]);
-        printf_mutix(philo->id,  philo->data, "has taken a fork\n");
-        pthread_mutex_lock(&philo->data->philo_data[philo->id]);
-        philo->last_meal = get_time();
-        philo->n_of_meals++;
-        pthread_mutex_unlock(&philo->data->philo_data[philo->id]);
-        printf_mutix(philo->id,  philo->data, "is eating\n");
-        ft_usleep(philo->data->time_to_eat);
-        pthread_mutex_unlock(&philo->data->forks[philo->right_fork]);
-        pthread_mutex_unlock(&philo->data->forks[philo->left_fork]);
-        printf_mutix(philo->id,  philo->data, "is sleeping\n");
-        ft_usleep(philo->data->time_to_sleep);
-        printf_mutix(philo->id,  philo->data, "is thinking\n");
-
-    }
-    return NULL;
+	i = 0;
+	while (i < last_index)
+	{
+		pthread_join(data->philos[i].thread_id, NULL);
+		i++;
+	}
 }
 
-void ft_kill_threads(t_element *data, int last_index)
+int	threads_creation(t_element *data)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (i < last_index)
-    {
-        pthread_join(data->philos[i].thread_id, NULL);
-        i++;
-    }
+	i = 0;
+	while (i < data->number_of_philosophers)
+	{
+		data->philos[i].last_meal = get_time();
+		if (pthread_create(&data->philos[i].thread_id, NULL, routine,
+				&data->philos[i]) != 0)
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
-int thread_create(t_element *data)
+t_philo	*philos_init(t_element *data)
 {
-    int i = 0;
-    while (i < data->number_of_philosophers)
-    {
-        data->philos[i].last_meal = get_time();
-        if (pthread_create(&data->philos[i].thread_id, NULL, routine, &data->philos[i])!= 0)
-        {
-            ft_kill_threads(data, i);
-            return 1;
-        }
-        i++;
-    }
-    return 0;
+	int		i;
+	t_philo	*philo;
+
+	i = -1;
+	philo = malloc(sizeof(t_philo) * data->number_of_philosophers);
+	if (!philo)
+		return (NULL);
+	memset(philo, 0, sizeof(t_philo) * data->number_of_philosophers);
+	while (++i < data->number_of_philosophers)
+	{
+		philo[i].id = i;
+		if (i % 2 == 0)
+		{
+			philo[i].left_fork = i;
+			philo[i].right_fork = (i + 1) % data->number_of_philosophers;
+		}
+		else
+		{
+			philo[i].left_fork = (i + 1) % data->number_of_philosophers;
+			philo[i].right_fork = i;
+		}
+		philo[i].n_of_meals = 0;
+		philo[i].data = data;
+	}
+	return (philo);
+}
+
+int	data_init(t_element *data)
+{
+	data->alive = true;
+	data->alive_mutex = alive_mutex_init();
+	data->philo_data = philo_data_init(data);
+	data->forks = forks_init(data);
+	data->print = print_init();
+	data->philos = philos_init(data);
+	if (!data->philos || !data->philo_data || !data->forks || !data->print
+		|| !data->alive_mutex)
+		return (free_resources(data), 1);
+	return (0);
 }

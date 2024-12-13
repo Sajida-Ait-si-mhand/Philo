@@ -1,5 +1,14 @@
-// throw an error for arguments that are not:
-// numbers, negative numbers, or zeros in the case of philosophers or number of time each philo must eat
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: saait-si <saait-si@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/13 05:02:39 by saait-si          #+#    #+#             */
+/*   Updated: 2024/12/13 05:33:02 by saait-si         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "./philo.h"
 
@@ -94,10 +103,10 @@ int	parsing(t_element *data, int ac, char **av)
 		data->n_of_meals = -1;
 	error_code = (data->number_of_philosophers == -1
 			|| (int)data->time_to_die == -1 || data->time_to_eat == -1
-			|| data->time_to_sleep == -1 || (ac == 6
-				&& data->n_of_meals == -1));
-	if (data->number_of_philosophers <= 0 || (data->n_of_meals <= 0
-			&& ac == 6) || error_code)
+			|| data->time_to_sleep == -1
+			|| (ac == 6 && data->n_of_meals == -1));
+	if (data->number_of_philosophers <= 0 || (data->n_of_meals <= 0 && ac == 6)
+		|| error_code)
 	{
 		write(2, "invalid arguments\n", ft_strlen("invalid arguments\n"));
 		return (1);
